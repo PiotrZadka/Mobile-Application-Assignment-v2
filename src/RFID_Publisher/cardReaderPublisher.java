@@ -1,6 +1,4 @@
 package RFID_Publisher;
-
-import utils.Utils;
 import org.eclipse.paho.client.mqttv3.*;
 
 public class cardReaderPublisher {
