@@ -6,8 +6,8 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="/Users/piotrzadka/Documents/Eclipse/Mobile-Application-Assignment-Clients/phidget22.jar"/>
-	<classpathentry kind="lib" path="/Users/piotrzadka/Documents/Eclipse/Mobile-Application-Assignment-Clients/gson-2.8.5.jar"/>
-	<classpathentry kind="lib" path="/Users/piotrzadka/Documents/Eclipse/Mobile-Application-Assignment-Clients/org.eclipse.paho.client.mqttv3-1.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/piotr/Documents/Eclipse Projects/Mobile-Application-Assignment-v2/phidget22.jar"/>
+	<classpathentry kind="lib" path="C:/Users/piotr/Documents/Eclipse Projects/Mobile-Application-Assignment-v2/gson-2.8.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/piotr/Documents/Eclipse Projects/Mobile-Application-Assignment-v2/org.eclipse.paho.client.mqttv3-1.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -11,32 +11,7 @@ import com.google.gson.Gson;
 
 public class MotorToServerDB  {
     
-    int lastSensorValue = 0;
-
-    // Declare a default sensor object (no location, name/value set later)
-    // This will only work when you have SensorData class developed
-    // and a SensorServer developed that accepts json strings, as in the lab
-    MotorData oneSensor = 
-    		new MotorData("test", "open");
-    // Declare GSON utility object
-    Gson gson = new Gson();
-    // Declare String to hold json representation of sensor object data
-    String oneSensorJson = new String();
-    // address of server which will receive sensor data
-    // Altered to point to server to deal with incoming json parameters
     public static String sensorServerURL = "http://localhost:8080/AssignmentServer/MotorServerDB";
- 
-    public static void main(String[] args) {
-
-        new MotorToServerDB();
-    }
-
-    public MotorToServerDB() {
-    	
-			oneSensorJson = gson.toJson(oneSensor);
-				
-			sendToServer(oneSensorJson);
-    }
 
     public String sendToServer(String oneSensorJson){
         URL url;

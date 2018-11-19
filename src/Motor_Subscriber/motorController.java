@@ -4,6 +4,7 @@ import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.*;
 
+import com.google.gson.Gson;
 import com.phidget22.PhidgetException;
 import com.phidget22.RCServo;
 
@@ -21,6 +22,16 @@ public class motorController implements MqttCallback{
         if(message.toString().equals("open")) {
         	System.out.println("Opening Door");
         	openLatch(servo);
+        	
+        	//Collect motor data and send
+        	MotorData data = new MotorData("unknown","unknown");
+        	data.setTagId("door1");
+        	data.setAttempt("open");
+        	Gson gson = new Gson();
+        	String oneSensorJson = new String();
+        	MotorToServerDB sendData = new MotorToServerDB();
+        	oneSensorJson = gson.toJson(data);
+        	sendData.sendToServer(oneSensorJson); //String
         }
         else if(message.toString().equals("close")) {
         	System.out.println("Closing Door");

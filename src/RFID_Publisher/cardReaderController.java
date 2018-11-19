@@ -24,11 +24,11 @@ public class cardReaderController {
 	   		public void onTag(RFIDTagEvent e) {
 	   			// Change "card" to the name of your ID card you are using.
 	   			// If doors are closed and card detected
-	   			if(e.getTag().equals("Ming") && locked == true) {
+	   			if(e.getTag().equals("card") && locked == true) {
 	   				cardReader.start("open");
 	   				locked = false;
 	   			}
-	   			else if(e.getTag().equals("Ming") && locked == false) {
+	   			else if(e.getTag().equals("card") && locked == false) {
 	   				cardReader.start("close");
 	   				locked = true;
 	   			}
