@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/Users/piotr/Documents/Eclipse Projects/Mobile-Application-Assignment/gson-2.8.5.jar"/>
-	<classpathentry kind="lib" path="C:/Users/piotr/Documents/Eclipse Projects/Mobile-Application-Assignment/phidget22.jar"/>
-	<classpathentry kind="lib" path="C:/Users/piotr/Documents/Eclipse Projects/Mobile-Application-Assignment/org.eclipse.paho.client.mqttv3-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/piotrzadka/Documents/Eclipse/Mobile-Application-Assignment-Clients/phidget22.jar"/>
+	<classpathentry kind="lib" path="/Users/piotrzadka/Documents/Eclipse/Mobile-Application-Assignment-Clients/gson-2.8.5.jar"/>
+	<classpathentry kind="lib" path="/Users/piotrzadka/Documents/Eclipse/Mobile-Application-Assignment-Clients/org.eclipse.paho.client.mqttv3-1.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
