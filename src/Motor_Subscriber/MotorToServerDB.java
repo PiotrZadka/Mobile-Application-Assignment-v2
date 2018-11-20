@@ -13,17 +13,16 @@ public class MotorToServerDB  {
     
     public static String sensorServerURL = "http://localhost:8080/AssignmentServer/MotorServerDB";
 
-    public String sendToServer(String oneSensorJson){
+    public String sendToServer(String motorDataJson){
         URL url;
         HttpURLConnection conn;
         BufferedReader rd;
-        // Replace invalid URL characters from json string
         try {
-			oneSensorJson = URLEncoder.encode(oneSensorJson, "UTF-8");
+        	motorDataJson = URLEncoder.encode(motorDataJson, "UTF-8");
 		} catch (UnsupportedEncodingException e1) {
 			e1.printStackTrace();
 		}
-        String fullURL = sensorServerURL + "?sensordata="+oneSensorJson;
+        String fullURL = sensorServerURL + "?sensordata="+motorDataJson;
         System.out.println("Sending data to: "+fullURL);  // DEBUG confirmation message
         String line;
         String result = "";

@@ -9,9 +9,13 @@ import com.phidget22.PhidgetException;
 import com.phidget22.RCServo;
 
 public class motorController implements MqttCallback{
-	RCServo servo;
 	public static final String userid = "14056838"; // change this to be your student-id
-
+	RCServo servo;
+	MotorData data = new MotorData("door1","unknown");
+	Gson gson = new Gson();
+	String dataJson = new String();
+	MotorToServerDB sendData = new MotorToServerDB();
+	
     @Override
     public void connectionLost(Throwable cause) {
         //This is called when the connection is lost. We could reconnect here.
@@ -22,20 +26,18 @@ public class motorController implements MqttCallback{
         if(message.toString().equals("open")) {
         	System.out.println("Opening Door");
         	openLatch(servo);
-        	
-        	//Collect motor data and send
-        	MotorData data = new MotorData("unknown","unknown");
-        	data.setTagId("door1");
+        	//send data with successful attempt
         	data.setAttempt("open");
-        	Gson gson = new Gson();
-        	String oneSensorJson = new String();
-        	MotorToServerDB sendData = new MotorToServerDB();
-        	oneSensorJson = gson.toJson(data);
-        	sendData.sendToServer(oneSensorJson); //String
+        	dataJson = gson.toJson(data);
+        	sendData.sendToServer(dataJson);
         }
         else if(message.toString().equals("close")) {
         	System.out.println("Closing Door");
         	closeLatch(servo);
+        	//send data with unsuccessful attempt
+        	data.setAttempt("close");
+        	dataJson = gson.toJson(data);
+        	sendData.sendToServer(dataJson);
         }
 
         if ((userid+"/LWT").equals(topic)) {
@@ -45,7 +47,6 @@ public class motorController implements MqttCallback{
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
-        //no-op
     }
     
 	public static void openLatch(RCServo servo) throws InterruptedException, PhidgetException {    	
