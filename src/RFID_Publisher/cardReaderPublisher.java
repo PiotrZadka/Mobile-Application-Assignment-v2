@@ -36,7 +36,7 @@ public class cardReaderPublisher {
             options.setWill(client.getTopic(userid+"/LWT"), "I'm gone :(".getBytes(), 0, false);
 
             client.connect(options);
-
+            
             //Publish data once
             publishTemperature(doorState);
             //Disconnect client in order to wait for another door state

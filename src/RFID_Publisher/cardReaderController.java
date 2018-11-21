@@ -60,4 +60,8 @@ public class cardReaderController {
 	    rfid.close();
 	    System.out.println("Card detection disabled");
 	}
+	
+	public void validateCard() {
+		
+	}
 }
