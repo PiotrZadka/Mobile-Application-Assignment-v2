@@ -1,12 +1,21 @@
 package RFID_Publisher;
+import com.google.gson.Gson;
 import com.phidget22.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 
 public class cardReaderController {
 	// Creating new instance of Motor and Card Reader devices
 	static RCServo doorlock;
 	static RFID rfid;
 	static cardReaderPublisher cardReader = new cardReaderPublisher();
+	static cardReaderData cardReaderData = new cardReaderData("unknown","unknown");
 	boolean locked = true;
+	Gson gson = new Gson();
 	
 	public static void main(String[] args) throws PhidgetException {
 		// Execute card reader detection
@@ -24,13 +33,27 @@ public class cardReaderController {
 	   		public void onTag(RFIDTagEvent e) {
 	   			// Change "card" to the name of your ID card you are using.
 	   			// If doors are closed and card detected
-	   			if(e.getTag().equals("card") && locked == true) {
+	   			String tagID = e.getTag();
+	   			cardReaderData.setTagId(tagID);
+	   			
+	   			try {
+					String rfidID = String.valueOf(rfid.getDeviceID());
+					cardReaderData.setReaderId(rfidID);
+				} catch (PhidgetException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+	   			if(validateCard(cardReaderData).equals("success") && locked == true) {
 	   				cardReader.start("open");
 	   				locked = false;
+
 	   			}
-	   			else if(e.getTag().equals("card") && locked == false) {
+	   			else if(validateCard(cardReaderData).equals("success") && locked == false) {
 	   				cardReader.start("close");
 	   				locked = true;
+	   			}
+	   			else {
+	   				System.out.print("Card not recognised");
 	   			}
 	   		}
 	    });
@@ -61,7 +84,37 @@ public class cardReaderController {
 	    System.out.println("Card detection disabled");
 	}
 	
-	public void validateCard() {
+	public String validateCard(cardReaderData data) {
 		
+		String sensorServerURL = "http://localhost:8080/AssignmentServer/CardValidator";
+		URL url;
+        HttpURLConnection conn;
+        BufferedReader rd;
+        String dataToJson = gson.toJson(data);
+        try {
+        	dataToJson = URLEncoder.encode(dataToJson, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
+        
+        String fullURL = sensorServerURL + "?validationData="+dataToJson;
+        System.out.println("Sending data to: "+fullURL);  // DEBUG confirmation message
+        String line;
+        String result = "";
+        try {
+           url = new URL(fullURL);
+           conn = (HttpURLConnection) url.openConnection();
+           conn.setRequestMethod("GET");
+           rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+           // Request response from server to enable URL to be opened
+           while ((line = rd.readLine()) != null) {
+              result += line;
+              System.out.print(result);
+           }
+           rd.close();
+        } catch (Exception e) {
+           e.printStackTrace();
+        }
+        return result;    
 	}
 }
