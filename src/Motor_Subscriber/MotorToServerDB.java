@@ -12,6 +12,7 @@ public class MotorToServerDB  {
     
     public static String sensorServerURL = "http://localhost:8080/AssignmentServer/MotorServerDB";
 
+    // Update Database with data received from "motorController"
     public String sendToServer(String motorDataJson){
         URL url;
         HttpURLConnection conn;

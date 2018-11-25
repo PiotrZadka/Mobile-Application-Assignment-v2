@@ -9,13 +9,13 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 public class cardReaderController {
-	// Creating new instance of Motor and Card Reader devices
 	static RCServo doorlock;
 	static RFID rfid;
 	static cardReaderPublisher cardReader = new cardReaderPublisher();
 	static cardReaderData cardReaderData = new cardReaderData("unknown","unknown","unknown");
 	boolean locked = true;
 	Gson gson = new Gson();
+	
 	
 	public static void main(String[] args) throws PhidgetException {
 		// Execute card reader detection
@@ -24,6 +24,7 @@ public class cardReaderController {
 	}
 
 	
+	// This method checks the card ID being used and reader ID therefore broadcast through MQTT each attempt
 	public void checkTag() throws PhidgetException{
 		// When called, first of all create new object of RFID upon which we execute listeners.
 		rfid = new RFID();
@@ -31,33 +32,43 @@ public class cardReaderController {
 		rfid.addTagListener(new RFIDTagListener() {
 			//UploadData upload;
 	   		public void onTag(RFIDTagEvent e) {
-	   			// Change "card" to the name of your ID card you are using.
-	   			// If doors are closed and card detected
+	   			
+	   			// Set tag id that is being read by RFID (any card)
 	   			String tagID = e.getTag();
 	   			cardReaderData.setTagId(tagID);
 	   			
 	   			try {
+	   				//Set device id which is being used
 					String rfidID = String.valueOf(rfid.getDeviceID());
 					cardReaderData.setReaderId(rfidID);
 				} catch (PhidgetException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+	   			// Before broadcasting check if card is valid.
+	   			// Locked variable is to keep track on each attempt of card being read
+	   			// therefore we can distinguish if card is trying to open the door or close
 	   			if(validateCard(cardReaderData).equals("success") && locked == true) {
-	   				//cardReader.start("open");
+	   				//if everything is fine set state to open (this opens door lock only when card is valid)
 	   				cardReaderData.setDoorState("open");
+	   				// encapsulate everything in JSON
 	   				String cardReaderDataJson = gson.toJson(cardReaderData);
+	   				//Broadcast
 	   				cardReader.start(cardReaderDataJson);
+	   				//keep track on attempts
 	   				locked = false;
 
 	   			}
+	   			// Same as above but this triggers every odd time when card is trying to open or close therefore "locked" is set as false
 	   			else if(validateCard(cardReaderData).equals("success") && locked == false) {
-	   				//cardReader.start("close");
 	   				cardReaderData.setDoorState("close");
 	   				String cardReaderDataJson = gson.toJson(cardReaderData);
 	   				cardReader.start(cardReaderDataJson);
+	   				// keep track on attempts
 	   				locked = true;
 	   			}
+	   			// If card is not recognized still broadcast details over so android app can inform about attempt.
+	   			// Perhaps someone who is not validated is trying to get access.
 	   			else {
 	   				String cardReaderDataJson = gson.toJson(cardReaderData);
 	   				cardReader.start(cardReaderDataJson);
@@ -92,6 +103,7 @@ public class cardReaderController {
 	    System.out.println("Card detection disabled");
 	}
 	
+	// Card validation
 	public String validateCard(cardReaderData data) {
 		
 		String sensorServerURL = "http://localhost:8080/AssignmentServer/CardValidator";

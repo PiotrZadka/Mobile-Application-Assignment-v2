@@ -2,7 +2,8 @@ package RFID_Publisher;
 import org.eclipse.paho.client.mqttv3.*;
 
 public class cardReaderPublisher {
-
+	
+	// MQTT brokers
     // public static final String BROKER_URL = "tcp://broker.hivemq.com:1883";
      public static final String BROKER_URL = "tcp://iot.eclipse.org:1883";
     //public static final String BROKER_URL = "tcp://broker.mqttdashboard.com:1883";
@@ -27,6 +28,7 @@ public class cardReaderPublisher {
         }
     }
 
+    // Publishing all data recieved from "cardReaderController"
     void start(String cardReaderDataJson) {
         try {
             MqttConnectOptions options = new MqttConnectOptions();

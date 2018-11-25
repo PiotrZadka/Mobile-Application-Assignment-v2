@@ -25,7 +25,11 @@ public class motorController implements MqttCallback{
 
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
+    	
+    	// Decode message received either from android app or RFID publisher from JSON
     	cardReaderData messageJson = gson.fromJson(message.toString(), cardReaderData.class);
+    	
+    	// If message is valid but the request is to open the door
         if(messageJson.getTagId().equals("card") && messageJson.getDoorState().equals("open")) {
         	System.out.println("Opening Door");
         	openLatch(servo);
@@ -34,6 +38,7 @@ public class motorController implements MqttCallback{
         	dataJson = gson.toJson(data);
         	sendData.sendToServer(dataJson);
         }
+        // If message is valid but the request is to close the door
         else if(messageJson.getTagId().equals("card") && messageJson.getDoorState().equals("close")) {
         	System.out.println("Closing Door");
         	closeLatch(servo);
