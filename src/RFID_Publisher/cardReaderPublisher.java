@@ -27,7 +27,7 @@ public class cardReaderPublisher {
         }
     }
 
-    void start(String doorState) {
+    void start(String cardReaderDataJson) {
         try {
             MqttConnectOptions options = new MqttConnectOptions();
             options.setCleanSession(false);
@@ -38,7 +38,7 @@ public class cardReaderPublisher {
             client.connect(options);
             
             //Publish data once
-            publishTemperature(doorState);
+            publishTemperature(cardReaderDataJson);
             //Disconnect client in order to wait for another door state
             client.disconnect();
 
@@ -48,11 +48,11 @@ public class cardReaderPublisher {
         }
     }
 
-    private void publishTemperature(String doorState) throws MqttException {
+    private void publishTemperature(String cardReaderDataJson) throws MqttException {
         final MqttTopic temperatureTopic = client.getTopic(TOPIC_TEMPERATURE);
         
-        temperatureTopic.publish(new MqttMessage(doorState.getBytes()));
+        temperatureTopic.publish(new MqttMessage(cardReaderDataJson.getBytes()));
 
-        System.out.println("Published data. Topic: " + temperatureTopic.getName() + "  Message: " + doorState);
+        System.out.println("Published data. Topic: " + temperatureTopic.getName() + "  Message: " + cardReaderDataJson);
     }
 }

@@ -13,7 +13,7 @@ public class cardReaderController {
 	static RCServo doorlock;
 	static RFID rfid;
 	static cardReaderPublisher cardReader = new cardReaderPublisher();
-	static cardReaderData cardReaderData = new cardReaderData("unknown","unknown");
+	static cardReaderData cardReaderData = new cardReaderData("unknown","unknown","unknown");
 	boolean locked = true;
 	Gson gson = new Gson();
 	
@@ -44,15 +44,23 @@ public class cardReaderController {
 					e1.printStackTrace();
 				}
 	   			if(validateCard(cardReaderData).equals("success") && locked == true) {
-	   				cardReader.start("open");
+	   				//cardReader.start("open");
+	   				cardReaderData.setDoorState("open");
+	   				String cardReaderDataJson = gson.toJson(cardReaderData);
+	   				cardReader.start(cardReaderDataJson);
 	   				locked = false;
 
 	   			}
 	   			else if(validateCard(cardReaderData).equals("success") && locked == false) {
-	   				cardReader.start("close");
+	   				//cardReader.start("close");
+	   				cardReaderData.setDoorState("close");
+	   				String cardReaderDataJson = gson.toJson(cardReaderData);
+	   				cardReader.start(cardReaderDataJson);
 	   				locked = true;
 	   			}
 	   			else {
+	   				String cardReaderDataJson = gson.toJson(cardReaderData);
+	   				cardReader.start(cardReaderDataJson);
 	   				System.out.print("Card not recognised");
 	   			}
 	   		}

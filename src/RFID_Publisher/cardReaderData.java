@@ -3,10 +3,13 @@ package RFID_Publisher;
 public class cardReaderData {
 	String tagId;
 	String decideID;
+	String doorState;
 	
-	cardReaderData(String tagId, String decideID){
+	cardReaderData(String tagId, String decideID, String doorState){
 		this.tagId = tagId;
 		this.decideID = decideID;
+		this.doorState = doorState;
+		
 	}
 
 	public String getTagId() {
@@ -24,4 +27,13 @@ public class cardReaderData {
 	public void setReaderId(String deviceID) {
 		this.decideID = deviceID;
 	}
+
+	public String getDoorState() {
+		return doorState;
+	}
+
+	public void setDoorState(String doorState) {
+		this.doorState = doorState;
+	}
+	
 }

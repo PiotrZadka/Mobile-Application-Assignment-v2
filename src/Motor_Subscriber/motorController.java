@@ -8,6 +8,8 @@ import com.google.gson.Gson;
 import com.phidget22.PhidgetException;
 import com.phidget22.RCServo;
 
+import RFID_Publisher.cardReaderData;
+
 public class motorController implements MqttCallback{
 	public static final String userid = "14056838"; // change this to be your student-id
 	RCServo servo;
@@ -23,7 +25,8 @@ public class motorController implements MqttCallback{
 
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
-        if(message.toString().equals("open")) {
+    	cardReaderData messageJson = gson.fromJson(message.toString(), cardReaderData.class);
+        if(messageJson.getTagId().equals("card") && messageJson.getDoorState().equals("open")) {
         	System.out.println("Opening Door");
         	openLatch(servo);
         	//send data with successful attempt
@@ -31,7 +34,7 @@ public class motorController implements MqttCallback{
         	dataJson = gson.toJson(data);
         	sendData.sendToServer(dataJson);
         }
-        else if(message.toString().equals("close")) {
+        else if(messageJson.getTagId().equals("card") && messageJson.getDoorState().equals("close")) {
         	System.out.println("Closing Door");
         	closeLatch(servo);
         	//send data with unsuccessful attempt
