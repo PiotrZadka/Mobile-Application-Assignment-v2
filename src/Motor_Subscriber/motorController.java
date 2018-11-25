@@ -35,6 +35,7 @@ public class motorController implements MqttCallback{
         	openLatch(servo);
         	//send data with successful attempt
         	data.setAttempt("open");
+        	data.setTagId(messageJson.getTagId());
         	dataJson = gson.toJson(data);
         	sendData.sendToServer(dataJson);
         }
@@ -44,6 +45,7 @@ public class motorController implements MqttCallback{
         	closeLatch(servo);
         	//send data with unsuccessful attempt
         	data.setAttempt("close");
+        	data.setTagId(messageJson.getTagId());
         	dataJson = gson.toJson(data);
         	sendData.sendToServer(dataJson);
         }
