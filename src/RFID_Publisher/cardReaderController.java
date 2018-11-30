@@ -9,10 +9,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 public class cardReaderController {
-	static RCServo doorlock;
 	static RFID rfid;
 	static cardReaderPublisher cardReader = new cardReaderPublisher();
-	static cardReaderData cardReaderData = new cardReaderData("unknown","unknown","unknown");
+	static cardReaderData cardReaderData = new cardReaderData("unknown","unknown","unknown","unknown");
 	boolean locked = true;
 	Gson gson = new Gson();
 	
@@ -32,27 +31,22 @@ public class cardReaderController {
 		rfid.addTagListener(new RFIDTagListener() {
 			//UploadData upload;
 	   		public void onTag(RFIDTagEvent e) {
-	   			
 	   			// Set tag id that is being read by RFID (any card)
 	   			String tagID = e.getTag();
 	   			cardReaderData.setTagId(tagID);
-	   			
-	   			try {
-	   				//Set device id which is being used
-					String rfidID = String.valueOf(rfid.getDeviceID());
-					cardReaderData.setReaderId(rfidID);
-				} catch (PhidgetException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 	   			// Before broadcasting check if card is valid.
 	   			// Locked variable is to keep track on each attempt of card being read
-	   			// therefore we can distinguish if card is trying to open the door or close
-	   			if(validateCard(cardReaderData).equals("success") && locked == true) {
+	   			//TUTAJ// therefore we can distinguish if card is trying to open the door or close
+	   			//System.out.print(validateCard(cardReaderData));
+	   			cardReaderData validationResult = (validateCard(cardReaderData));
+	   			System.out.print("Checking what is being returned from validateCard()");
+	   			System.out.print("CardName =>"+validationResult.getTagId()+" CardReaderID =>"+validationResult.getReaderId()+" MotorID =>"+validationResult.getMotorId());
+	   			
+	   			if(validationResult.getMotorId()!= null && locked == true) {
 	   				//if everything is fine set state to open (this opens door lock only when card is valid)
-	   				cardReaderData.setDoorState("open");
+	   				validationResult.setDoorState("open");
 	   				// encapsulate everything in JSON
-	   				String cardReaderDataJson = gson.toJson(cardReaderData);
+	   				String cardReaderDataJson = gson.toJson(validationResult);
 	   				//Broadcast
 	   				cardReader.start(cardReaderDataJson);
 	   				//keep track on attempts
@@ -60,9 +54,9 @@ public class cardReaderController {
 
 	   			}
 	   			// Same as above but this triggers every odd time when card is trying to open or close therefore "locked" is set as false
-	   			else if(validateCard(cardReaderData).equals("success") && locked == false) {
-	   				cardReaderData.setDoorState("close");
-	   				String cardReaderDataJson = gson.toJson(cardReaderData);
+	   			else if(validationResult.getMotorId()!= null && locked == false) {
+	   				validationResult.setDoorState("close");
+	   				String cardReaderDataJson = gson.toJson(validationResult);
 	   				cardReader.start(cardReaderDataJson);
 	   				// keep track on attempts
 	   				locked = true;
@@ -70,9 +64,10 @@ public class cardReaderController {
 	   			// If card is not recognized still broadcast details over so android app can inform about attempt.
 	   			// Perhaps someone who is not validated is trying to get access.
 	   			else {
-	   				String cardReaderDataJson = gson.toJson(cardReaderData);
+	   				String cardReaderDataJson = gson.toJson(validationResult);
+	   				validationResult.setDoorState("unknown");
 	   				cardReader.start(cardReaderDataJson);
-	   				System.out.print("Card not recognised");
+	   				System.out.print("Card "+validationResult.getTagId()+" is not recognised");
 	   			}
 	   		}
 	    });
@@ -94,7 +89,6 @@ public class cardReaderController {
 	    		// Keep card detection for 1 minute
 	    		Thread.sleep(100000);
 	   		} catch (InterruptedException e1) {
-	   			// TODO Auto-generated catch block
 	   			e1.printStackTrace();
 	   		}
 	    
@@ -104,7 +98,7 @@ public class cardReaderController {
 	}
 	
 	// Card validation
-	public String validateCard(cardReaderData data) {
+	public cardReaderData validateCard(cardReaderData data) {
 		
 		String sensorServerURL = "http://localhost:8080/AssignmentServer/CardValidator";
 		URL url;
@@ -129,12 +123,12 @@ public class cardReaderController {
            // Request response from server to enable URL to be opened
            while ((line = rd.readLine()) != null) {
               result += line;
-              System.out.print(result);
            }
            rd.close();
         } catch (Exception e) {
            e.printStackTrace();
         }
-        return result;    
+        cardReaderData resultData = gson.fromJson(result, cardReaderData.class);
+        return resultData;    
 	}
 }
