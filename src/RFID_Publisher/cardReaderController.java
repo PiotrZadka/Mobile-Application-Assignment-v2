@@ -34,13 +34,14 @@ public class cardReaderController {
 	   			// Set tag id that is being read by RFID (any card)
 	   			String tagID = e.getTag();
 	   			cardReaderData.setTagId(tagID);
+	   			System.out.println("Tag ID detected => "+e.getTag());
 	   			// Before broadcasting check if card is valid.
 	   			// Locked variable is to keep track on each attempt of card being read
-	   			//TUTAJ// therefore we can distinguish if card is trying to open the door or close
-	   			//System.out.print(validateCard(cardReaderData));
+	   			// therefore we can distinguish if card is trying to open the door or close
+	   			System.out.println("Validating Card ID");
 	   			cardReaderData validationResult = (validateCard(cardReaderData));
-	   			System.out.print("Checking what is being returned from validateCard()");
-	   			System.out.print("CardName =>"+validationResult.getTagId()+" CardReaderID =>"+validationResult.getReaderId()+" MotorID =>"+validationResult.getMotorId());
+	   			System.out.println("Checking what is being returned from validateCard()");
+	   			System.out.println("CardName =>"+validationResult.getTagId()+" CardReaderID =>"+validationResult.getReaderId()+" MotorID =>"+validationResult.getMotorId());
 	   			
 	   			if(validationResult.getMotorId()!= null && locked == true) {
 	   				//if everything is fine set state to open (this opens door lock only when card is valid)
@@ -76,7 +77,7 @@ public class cardReaderController {
 		rfid.addTagLostListener(new RFIDTagLostListener() {
       		  // What to do when a tag is lost
 			public void onTagLost(RFIDTagLostEvent e) {
-				System.out.println("Card not detected");
+				System.out.print("Card moved away from reader");
 			}
 		});
 		
@@ -100,10 +101,12 @@ public class cardReaderController {
 	// Card validation
 	public cardReaderData validateCard(cardReaderData data) {
 		
+		// Targeting servlet for card validation
 		String sensorServerURL = "http://localhost:8080/AssignmentServer/CardValidator";
 		URL url;
         HttpURLConnection conn;
         BufferedReader rd;
+        //Converting data from with tagID to JSON
         String dataToJson = gson.toJson(data);
         try {
         	dataToJson = URLEncoder.encode(dataToJson, "UTF-8");
@@ -112,7 +115,7 @@ public class cardReaderController {
 		}
         
         String fullURL = sensorServerURL + "?validationData="+dataToJson;
-        System.out.println("Sending data to: "+fullURL);  // DEBUG confirmation message
+        System.out.println("Sending data to: "+fullURL);  
         String line;
         String result = "";
         try {
@@ -128,6 +131,7 @@ public class cardReaderController {
         } catch (Exception e) {
            e.printStackTrace();
         }
+        // Unpack received JSON and return as object
         cardReaderData resultData = gson.fromJson(result, cardReaderData.class);
         return resultData;    
 	}
